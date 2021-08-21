@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { dbService } from "fbase";
+import React from "react";
 import {
   HashRouter as Router,
   Redirect,
@@ -10,21 +11,33 @@ import Auth from "../routes/Auth";
 import Home from "../routes/Home";
 import Navigation from "./Navi";
 
-const AppRouter = ({ isLoggedIn }) => {
+const AppRouter = ({ isLoggedIn, user, refreshUser }) => {
+  // 디비 변화 감지
+  const dbSensor = (func) => {
+    dbService.collection("nweet").onSnapshot((snap) => {
+      const nweetArr = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      func(nweetArr);
+    });
+  };
   return (
     <Router>
-      {isLoggedIn && <Navigation />}
+      {isLoggedIn && <Navigation user={user} />}
       <Switch>
         {isLoggedIn ? (
           <>
             <Route exact path="/">
-              <Home />
+              <Home dbSensor={dbSensor} user={user} />
             </Route>
             <Route exact path="/profile">
-              <Profile />
+              <Profile
+                dbSensor={dbSensor}
+                refreshUser={refreshUser}
+                user={user}
+              />
             </Route>
-            <Redirect from="*" to="/" />
-            {/* 위의 경로 외에 다른데로 갔을때 무적권 /로 보냄 */}
           </>
         ) : (
           <>
@@ -32,6 +45,7 @@ const AppRouter = ({ isLoggedIn }) => {
               <Auth />
             </Route>
             <Redirect from="*" to="/" />
+            {/* / 외에 다른데로 갔을때 무적권 /로 보냄 */}
           </>
         )}
       </Switch>
