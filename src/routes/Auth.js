@@ -1,6 +1,12 @@
 import AuthForm from "components/AuthForm";
 import { authService, firebaseInstance } from "fbase";
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTwitter,
+  faGoogle,
+  faGithub,
+} from "@fortawesome/free-brands-svg-icons";
 
 const Auth = () => {
   // 소셜로그인
@@ -20,14 +26,20 @@ const Auth = () => {
   };
 
   return (
-    <div>
+    <div className="authContainer">
+      <FontAwesomeIcon
+        icon={faTwitter}
+        color={"#04AAFF"}
+        size="3x"
+        style={{ marginBottom: 30 }}
+      />
       <AuthForm />
-      <div>
-        <button onClick={onSocialClick} name="google">
-          구글로 로그인
+      <div className="authBtns">
+        <button onClick={onSocialClick} name="google" className="authBtn">
+          구글로 로그인 <FontAwesomeIcon icon={faGoogle} />
         </button>
-        <button onClick={onSocialClick} name="github">
-          깃허브로 로그인
+        <button onClick={onSocialClick} name="github" className="authBtn">
+          깃허브로 로그인 <FontAwesomeIcon icon={faGithub} />
         </button>
       </div>
     </div>

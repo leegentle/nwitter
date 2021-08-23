@@ -5,6 +5,7 @@ const AuthForm = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [newAccount, setNewAccount] = useState(true);
+  const [error, setError] = useState("");
 
   // 아이디, 비번 입력
   const onChange = (e) => {
@@ -29,15 +30,7 @@ const AuthForm = () => {
         data = await authService
           .createUserWithEmailAndPassword(email, password)
           .catch(function (error) {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            if (errorCode === "auth/weak-password") {
-              alert("The password is too weak.");
-            } else {
-              alert(errorMessage);
-            }
-            console.log(error);
+            setError(error.message);
           }); // 회원가입하면 자동으로 로그인됨
       } else {
         data = await authService.signInWithEmailAndPassword(email, password);
@@ -55,7 +48,7 @@ const AuthForm = () => {
 
   return (
     <>
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form onSubmit={(e) => onSubmit(e)} className="container">
         <input
           name="email"
           type="email"
@@ -63,6 +56,7 @@ const AuthForm = () => {
           required
           value={email || ""}
           onChange={onChange}
+          className="authInput"
         />
         <input
           name="password"
@@ -71,10 +65,20 @@ const AuthForm = () => {
           required
           value={password || ""}
           onChange={onChange}
+          className="authInput"
         />
-        <input type="submit" value={newAccount ? "회원가입" : "로그인"} />
+        <input
+          className="authInput authSubmit"
+          type="submit"
+          value={newAccount ? "회원가입" : "로그인"}
+        />
+        {error && <span className="authError">{error}</span>}
       </form>
-      <button type="text" onClick={() => toggleAccount()}>
+      <button
+        type="text"
+        onClick={() => toggleAccount()}
+        className="authSwitch"
+      >
         {newAccount ? "로그인하기" : "회원가입하기"}
       </button>
     </>

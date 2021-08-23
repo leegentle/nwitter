@@ -8,13 +8,16 @@ const Profile = ({ user, refreshUser, dbSensor }) => {
 
   const [editText, setEditTxt] = useState(user.displayName);
   const [nweets, setNweets] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getMyNweets();
+    loading && getMyNweets();
     dbSensor(setNweets);
-  }, []);
 
+    return () => setLoading(false);
+  }, [loading, dbSensor]);
   // 내꺼 뉴윗만 가져오기
+
   const getMyNweets = async () => {
     const data = await dbService
       .collection("nweet")
@@ -22,7 +25,6 @@ const Profile = ({ user, refreshUser, dbSensor }) => {
       .orderBy("created_at", "asc") // 정렬도 가능, asc랑desc 따로 인덱싱 작업해줘야함 => 파이어베이스가 해줌 시간은좀 걸림ㅋㅋ
       .get();
     const mine = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    console.log(mine);
     setNweets(mine);
   };
   //로그아웃
@@ -48,15 +50,24 @@ const Profile = ({ user, refreshUser, dbSensor }) => {
     refreshUser();
   };
   return (
-    <>
-      <form onSubmit={onSubmit}>
+    <div className="container">
+      <form onSubmit={onSubmit} className="profileForm">
         <input
           onChange={onChange}
+          autoFocus
           value={editText}
           type="text"
-          placeholder="씨발"
+          placeholder="변경할 닉네임을 입력해주세요"
+          className="formInput"
         />
-        <input type="submit" value="확인" />
+        <input
+          type="submit"
+          value="확인"
+          className="formBtn"
+          style={{
+            marginTop: 10,
+          }}
+        />
       </form>
       {nweets.map((nweet) => {
         return (
@@ -67,8 +78,10 @@ const Profile = ({ user, refreshUser, dbSensor }) => {
           />
         );
       })}
-      <button onClick={onLogOutClick}>로그아웃</button>
-    </>
+      <button className="formBtn cancelBtn logOut" onClick={onLogOutClick}>
+        로그아웃
+      </button>
+    </div>
   );
 };
 export default Profile;

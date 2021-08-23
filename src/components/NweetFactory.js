@@ -1,6 +1,8 @@
 import { dbService, storageService } from "fbase";
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const NweetFactory = ({ user }) => {
   const [nweet, setNweet] = useState("");
@@ -8,6 +10,10 @@ const NweetFactory = ({ user }) => {
   // 글쓰기 버튼
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (nweet === "") {
+      alert("내용을 입력해 주세요");
+      return;
+    }
     let nImgUrl = "";
     if (nImg !== "") {
       const nImgRef = storageService.ref().child(`${user.uid}/${uuidv4()}`); //이미지 경로 및 이름 지정 => user.id가 경로, uuid가 이름
@@ -49,23 +55,48 @@ const NweetFactory = ({ user }) => {
   };
   // 이미지 업로드 취소
   const cencleImg = () => {
-    setNImg(null);
+    setNImg("");
   };
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="factoryForm">
+      <div className="factoryInput__container">
+        <input
+          className="factoryInput__input"
+          value={nweet || ""}
+          onChange={onChange}
+          type="text"
+          placeholder="무슨생각해?"
+          maxLength={120}
+        />
+        <input type="submit" value="&rarr;" className="factoryInput__arrow" />
+      </div>
+      <label htmlFor="attach-file" className="factoryInput__label">
+        <span>사진 올리기</span>
+        <FontAwesomeIcon icon={faPlus} />
+      </label>
+
       <input
-        value={nweet || ""}
-        onChange={onChange}
-        type="text"
-        placeholder="무슨생각해?"
-        maxLength={120}
+        id="attach-file"
+        type="file"
+        accept="image/*"
+        onChange={onFileChange}
+        style={{
+          opacity: 0,
+        }}
       />
-      <input onChange={onFileChange} type="file" accept="image/*" />
-      <input type="submit" value="글쓰기" />
+
       {nImg && (
-        <div>
-          <img src={nImg} alt="뉴위터 이미지" width="50px" height="50px" />
-          <button onClick={cencleImg}>취소</button>
+        <div className="factoryForm__attachment">
+          <img
+            src={nImg}
+            style={{
+              backgroundImage: nImg,
+            }}
+          />
+          <div className="factoryForm__clear" onClick={cencleImg}>
+            <span>취소</span>
+            <FontAwesomeIcon icon={faTimes} />
+          </div>
         </div>
       )}
     </form>

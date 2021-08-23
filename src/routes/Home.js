@@ -5,11 +5,14 @@ import React, { useEffect, useState } from "react";
 
 const Home = ({ user, dbSensor }) => {
   const [nweets, setNweets] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getNweets();
+    loading && getNweets();
     dbSensor(setNweets);
-  }, []);
+
+    return () => setLoading(false);
+  }, [loading, dbSensor]);
 
   // 뉴윗 가져오기
   const getNweets = async () => {
@@ -26,22 +29,12 @@ const Home = ({ user, dbSensor }) => {
     });
     setNweets(obj);
   };
-  // 디비 변화 감지
-  // const dbSensor = () => {
-  //   dbService.collection("nweet").onSnapshot((snap) => {
-  //     const nweetArr = snap.docs.map((doc) => ({
-  //       id: doc.id,
-  //       ...doc.data(),
-  //     }));
-  //     setNweets(nweetArr);
-  //   });
-  // };
 
   return (
-    <div>
+    <div className="container">
       {/* 뉴윗 생성 */}
       <NweetFactory user={user} />
-      <div>
+      <div style={{ marginTop: 30 }}>
         {nweets.map((nweet) => {
           return (
             <Nweet

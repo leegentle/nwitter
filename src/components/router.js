@@ -26,28 +26,39 @@ const AppRouter = ({ isLoggedIn, user, refreshUser }) => {
     <Router>
       {isLoggedIn && <Navigation user={user} />}
       <Switch>
-        {isLoggedIn ? (
-          <>
-            <Route exact path="/">
-              <Home dbSensor={dbSensor} user={user} />
-            </Route>
-            <Route exact path="/profile">
-              <Profile
-                dbSensor={dbSensor}
-                refreshUser={refreshUser}
-                user={user}
-              />
-            </Route>
-          </>
-        ) : (
-          <>
-            <Route exact path="/">
-              <Auth />
-            </Route>
-            <Redirect from="*" to="/" />
-            {/* / 외에 다른데로 갔을때 무적권 /로 보냄 */}
-          </>
-        )}
+        <>
+          {isLoggedIn ? (
+            <div
+              style={{
+                maxWidth: 890,
+                width: "100%",
+                margin: "0 auto",
+                marginTop: 80,
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Route exact path="/">
+                <Home dbSensor={dbSensor} user={user} />
+              </Route>
+              <Route exact path="/profile">
+                <Profile
+                  dbSensor={dbSensor}
+                  refreshUser={refreshUser}
+                  user={user}
+                />
+              </Route>
+            </div>
+          ) : (
+            <>
+              <Route exact path="/">
+                <Auth />
+              </Route>
+              <Redirect from="*" to="/" />
+              {/* / 외에 다른데로 갔을때 무적권 /로 보냄 */}
+            </>
+          )}
+        </>
       </Switch>
     </Router>
   );
